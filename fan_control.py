@@ -1,6 +1,7 @@
 import subprocess
 import time
 import re
+from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetTemperature, nvmlShutdown, NVML_TEMPERATURE_GPU
 
 # Configuration
 SERVER_IP = "SERVERS_IP_HERE"
@@ -14,25 +15,22 @@ TEMP_THRESHOLD_LOW = 45  # Decrease fan speed below this temperature
 FAN_SPEED_LOW = 0x14  # 20%
 FAN_SPEED_HIGH = 0x64  # 100%
 
-def get_gpu_temperature():
-    """Get the GPU temperature using nvidia-smi."""
-    try:
-        result = subprocess.run(["nvidia-smi", "--query-gpu=temperature.gpu", "--format=csv,noheader"],
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if result.returncode != 0:
-            print(f"Error querying GPU temperature: {result.stderr}")
-            return None
+# Initialize NVML at the start of the program
+nvmlInit()
 
-        # Extract temperature from the output
-        temp_match = re.search(r"\d+", result.stdout)
-        if temp_match:
-            return int(temp_match.group(0))
-        else:
-            print("Failed to parse GPU temperature.")
-            return None
-    except FileNotFoundError:
-        print("nvidia-smi command not found. Make sure NVIDIA drivers are installed.")
+def get_gpu_temperature():
+    """Get the GPU temperature using NVIDIA's NVML library."""
+    try:
+        handle = nvmlDeviceGetHandleByIndex(0)  # Assuming the first GPU (index 0)
+        temperature = nvmlDeviceGetTemperature(handle, NVML_TEMPERATURE_GPU)
+        return temperature
+    except Exception as e:
+        print(f"Error querying GPU temperature: {e}")
         return None
+
+# Ensure NVML is properly shut down when the program exits
+import atexit
+atexit.register(nvmlShutdown)
 
 class FanController:
     def __init__(self):

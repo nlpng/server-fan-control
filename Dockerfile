@@ -13,5 +13,8 @@ RUN apt-get update && apt-get install -y \
     nvidia-smi && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install necessary Python libraries
+RUN pip install nvidia-ml-py3
+
 # Set the entrypoint to run the script
 ENTRYPOINT ["python3", "fan_control.py"]

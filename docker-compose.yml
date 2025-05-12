@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  fan-control:
+    build: .
+    container_name: fan_control_service
+    restart: always
+    environment:
+      - SERVER_IP=SERVERS_IP_HERE
+      - IDRAC_USERNAME=IDRAC_USERNAME
+      - IDRAC_PASSWORD=IDRAC_PASSWORD_HERE
+    volumes:
+      - /usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro
+    privileged: true

@@ -47,6 +47,26 @@ Update the following placeholders in the `fan_control.py` file or set them as en
 - `IDRAC_USERNAME`: The username for IPMI access.
 - `IDRAC_PASSWORD`: The password for IPMI access.
 
+## Parameters Explained
+
+### Configuration Parameters
+- `SERVER_IP`: The IP address of the server where IPMI commands will be executed.
+- `IDRAC_USERNAME`: The username for accessing the iDRAC interface of the server.
+- `IDRAC_PASSWORD`: The password for accessing the iDRAC interface of the server.
+- `CHECK_INTERVAL`: The time interval (in seconds) between each GPU temperature check and fan speed adjustment.
+
+### Fan Speed Thresholds
+- `TEMP_THRESHOLD_HIGH`: The GPU temperature (in °C) above which the fan speed is set to 100%.
+- `TEMP_THRESHOLD_LOW`: The GPU temperature (in °C) below which the fan speed is set to 20%.
+- `FAN_SPEED_LOW`: The fan speed percentage (in hexadecimal) when the GPU temperature is below `TEMP_THRESHOLD_LOW` (default: 20%).
+- `FAN_SPEED_HIGH`: The fan speed percentage (in hexadecimal) when the GPU temperature exceeds `TEMP_THRESHOLD_HIGH` (default: 100%).
+
+### GPU Monitoring
+- The script uses NVIDIA's NVML library to monitor GPU temperatures.
+- `nvmlDeviceGetCount()`: Retrieves the total number of GPUs available on the server.
+- `nvmlDeviceGetHandleByIndex(index)`: Gets the handle for a GPU at the specified index.
+- `nvmlDeviceGetTemperature(handle, NVML_TEMPERATURE_GPU)`: Retrieves the temperature of the GPU associated with the given handle.
+
 ## How It Works
 1. The script initializes NVIDIA's NVML library to monitor GPU temperature.
 2. It enables manual fan control using `ipmitool`.

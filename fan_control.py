@@ -12,8 +12,8 @@ CHECK_INTERVAL = 10  # seconds
 # Fan speed thresholds
 TEMP_THRESHOLD_HIGH = 70  # Increase fan speed above this temperature
 TEMP_THRESHOLD_LOW = 45  # Decrease fan speed below this temperature
-FAN_SPEED_LOW = 0x14  # 20%
-FAN_SPEED_HIGH = 0x64  # 100%
+FAN_SPEED_LOW = 0x0A  # 10%
+FAN_SPEED_HIGH = 0x32  # 50%
 
 # Initialize NVML at the start of the program
 nvmlInit()

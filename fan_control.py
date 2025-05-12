@@ -1,6 +1,6 @@
 import subprocess
 import time
-from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetTemperature, nvmlShutdown, NVML_TEMPERATURE_GPU
+from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetTemperature, nvmlShutdown, NVML_TEMPERATURE_GPU, nvmlDeviceGetCount
 import atexit
 
 # Configuration
@@ -21,14 +21,19 @@ nvmlInit()
 # Ensure NVML is properly shut down when the program exits
 atexit.register(nvmlShutdown)
 
-def get_gpu_temperature():
-    """Get the GPU temperature using NVIDIA's NVML library."""
+def get_gpu_temperatures():
+    """Get the GPU temperatures for all available GPUs using NVIDIA's NVML library."""
     try:
-        handle = nvmlDeviceGetHandleByIndex(0)  # Assuming the first GPU (index 0)
-        return nvmlDeviceGetTemperature(handle, NVML_TEMPERATURE_GPU)
+        gpu_temperatures = []
+        device_count = nvmlDeviceGetCount()  # Get the total number of GPUs
+        for i in range(device_count):
+            handle = nvmlDeviceGetHandleByIndex(i)
+            temperature = nvmlDeviceGetTemperature(handle, NVML_TEMPERATURE_GPU)
+            gpu_temperatures.append(temperature)
+        return gpu_temperatures
     except Exception as e:
-        print(f"Error querying GPU temperature: {e}")
-        return None
+        print(f"Error querying GPU temperatures: {e}")
+        return []
 
 class FanController:
     def __init__(self):
@@ -66,6 +71,7 @@ class FanController:
         except FileNotFoundError:
             print("ipmitool command not found. Make sure ipmitool is installed.")
 
+# Update the main loop to monitor all GPUs
 def main():
     fan_controller = FanController()
 
@@ -73,18 +79,18 @@ def main():
     fan_controller.enable_manual_fan_control()
 
     while True:
-        temperature = get_gpu_temperature()
-        if temperature is not None:
-            print(f"Current GPU temperature: {temperature}°C")
+        temperatures = get_gpu_temperatures()
+        if temperatures:
+            print(f"Current GPU temperatures: {temperatures}°C")
 
-            if temperature > TEMP_THRESHOLD_HIGH:
-                print("Temperature is high. Setting fan speed to 100%.")
+            if any(temp > TEMP_THRESHOLD_HIGH for temp in temperatures):
+                print("One or more GPUs are hot. Setting fan speed to 100%.")
                 fan_controller.set_fan_speed(FAN_SPEED_HIGH)
-            elif temperature < TEMP_THRESHOLD_LOW:
-                print("Temperature is low. Setting fan speed to 20%.")
+            elif all(temp < TEMP_THRESHOLD_LOW for temp in temperatures):
+                print("All GPUs are cool. Setting fan speed to 20%.")
                 fan_controller.set_fan_speed(FAN_SPEED_LOW)
             else:
-                print("Temperature is within acceptable range. No change to fan speed.")
+                print("GPU temperatures are within acceptable range. No change to fan speed.")
 
         time.sleep(CHECK_INTERVAL)
 

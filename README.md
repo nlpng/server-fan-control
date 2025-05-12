@@ -55,6 +55,11 @@ Update the following placeholders in the `fan_control.py` file or set them as en
    - If the temperature drops below `TEMP_THRESHOLD_LOW` (default: 45°C), the fan speed is set to 20%.
    - Otherwise, the fan speed remains unchanged.
 
+## Constraints
+This Docker container only works on Dell PowerEdge servers that support IPMI commands, specifically:
+- Dell PowerEdge R720
+- iDRAC firmware version < 9 (e.g., firmware 3.30.30.30 or earlier)
+
 ## File Structure
 - `fan_control.py`: The main Python script for monitoring and controlling fan speed.
 - `Dockerfile`: Docker configuration for running the script in a container.

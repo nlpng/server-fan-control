@@ -1,7 +1,7 @@
 import subprocess
 import time
-import re
 from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetTemperature, nvmlShutdown, NVML_TEMPERATURE_GPU
+import atexit
 
 # Configuration
 SERVER_IP = "SERVERS_IP_HERE"
@@ -18,19 +18,17 @@ FAN_SPEED_HIGH = 0x64  # 100%
 # Initialize NVML at the start of the program
 nvmlInit()
 
+# Ensure NVML is properly shut down when the program exits
+atexit.register(nvmlShutdown)
+
 def get_gpu_temperature():
     """Get the GPU temperature using NVIDIA's NVML library."""
     try:
         handle = nvmlDeviceGetHandleByIndex(0)  # Assuming the first GPU (index 0)
-        temperature = nvmlDeviceGetTemperature(handle, NVML_TEMPERATURE_GPU)
-        return temperature
+        return nvmlDeviceGetTemperature(handle, NVML_TEMPERATURE_GPU)
     except Exception as e:
         print(f"Error querying GPU temperature: {e}")
         return None
-
-# Ensure NVML is properly shut down when the program exits
-import atexit
-atexit.register(nvmlShutdown)
 
 class FanController:
     def __init__(self):
@@ -89,7 +87,6 @@ def main():
                 print("Temperature is within acceptable range. No change to fan speed.")
 
         time.sleep(CHECK_INTERVAL)
-
 
 if __name__ == "__main__":
     main()

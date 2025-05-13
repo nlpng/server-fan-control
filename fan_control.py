@@ -1,6 +1,13 @@
 import subprocess
 import time
-from pynvml import nvmlInit, nvmlDeviceGetHandleByIndex, nvmlDeviceGetTemperature, nvmlShutdown, NVML_TEMPERATURE_GPU, nvmlDeviceGetCount
+from pynvml import (
+    nvmlInit,
+    nvmlDeviceGetHandleByIndex,
+    nvmlDeviceGetTemperature,
+    nvmlShutdown,
+    NVML_TEMPERATURE_GPU,
+    nvmlDeviceGetCount,
+)
 import atexit
 
 # Configuration
@@ -21,6 +28,7 @@ nvmlInit()
 # Ensure NVML is properly shut down when the program exits
 atexit.register(nvmlShutdown)
 
+
 def get_gpu_temperatures():
     """Get the GPU temperatures for all available GPUs using NVIDIA's NVML library."""
     try:
@@ -35,6 +43,7 @@ def get_gpu_temperatures():
         print(f"Error querying GPU temperatures: {e}")
         return []
 
+
 class FanController:
     def __init__(self):
         self.current_fan_speed = None
@@ -47,10 +56,25 @@ class FanController:
 
         try:
             command = [
-                "ipmitool", "-I", "lanplus", "-H", SERVER_IP, "-U", IDRAC_USERNAME, "-P", IDRAC_PASSWORD,
-                "raw", "0x30", "0x30", "0x02", "0xff", f"0x{speed:02x}"
+                "ipmitool",
+                "-I",
+                "lanplus",
+                "-H",
+                SERVER_IP,
+                "-U",
+                IDRAC_USERNAME,
+                "-P",
+                IDRAC_PASSWORD,
+                "raw",
+                "0x30",
+                "0x30",
+                "0x02",
+                "0xff",
+                f"0x{speed:02x}",
             ]
-            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
             if result.returncode != 0:
                 print(f"Error setting fan speed: {result.stderr}")
             else:
@@ -62,14 +86,29 @@ class FanController:
         """Enable manual fan control using ipmitool."""
         try:
             command = [
-                "ipmitool", "-I", "lanplus", "-H", SERVER_IP, "-U", IDRAC_USERNAME, "-P", IDRAC_PASSWORD,
-                "raw", "0x30", "0x30", "0x01", "0x00"
+                "ipmitool",
+                "-I",
+                "lanplus",
+                "-H",
+                SERVER_IP,
+                "-U",
+                IDRAC_USERNAME,
+                "-P",
+                IDRAC_PASSWORD,
+                "raw",
+                "0x30",
+                "0x30",
+                "0x01",
+                "0x00",
             ]
-            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+            )
             if result.returncode != 0:
                 print(f"Error enabling manual fan control: {result.stderr}")
         except FileNotFoundError:
             print("ipmitool command not found. Make sure ipmitool is installed.")
+
 
 # Update the main loop to monitor all GPUs
 def main():
@@ -90,9 +129,13 @@ def main():
                 print("All GPUs are cool. Setting fan speed to 20%.")
                 fan_controller.set_fan_speed(FAN_SPEED_LOW)
             else:
-                print("GPU temperatures are within acceptable range. No change to fan speed.")
+                print(
+                    "GPU temperatures are within acceptable range. "
+                    "No change to fan speed."
+                )
 
         time.sleep(CHECK_INTERVAL)
+
 
 if __name__ == "__main__":
     main()

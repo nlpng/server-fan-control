@@ -4,14 +4,8 @@ services:
   fan-control:
     build: .
     container_name: fan_control_service
-    restart: always
+    restart: unless-stopped
     environment:
-      - SERVER_IP=SERVERS_IP_HERE
-      - IDRAC_USERNAME=IDRAC_USERNAME
-      - IDRAC_PASSWORD=IDRAC_PASSWORD_HERE
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=utility
-    volumes:
-      - /usr/bin/nvidia-smi:/usr/bin/nvidia-smi:ro
-    privileged: true
+      NVIDIA_VISIBLE_DEVICES: "all"
+      NVIDIA_DRIVER_CAPABILITIES: "utility"
     runtime: nvidia

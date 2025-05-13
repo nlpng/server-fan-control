@@ -19,7 +19,7 @@ CHECK_INTERVAL = 10  # seconds
 # Fan speed thresholds
 TEMP_THRESHOLD_HIGH = 70  # Increase fan speed above this temperature
 TEMP_THRESHOLD_LOW = 45  # Decrease fan speed below this temperature
-FAN_SPEED_LOW = 0x0A  # 10%
+FAN_SPEED_LOW = 0x15  # 21%
 FAN_SPEED_HIGH = 0x32  # 50%
 
 # Initialize NVML at the start of the program
@@ -51,7 +51,6 @@ class FanController:
     def set_fan_speed(self, speed):
         """Set the fan speed using ipmitool."""
         if self.current_fan_speed == speed:
-            print(f"Fan speed is already set to {speed}%. No action taken.")
             return
 
         try:
@@ -114,25 +113,18 @@ class FanController:
 def main():
     fan_controller = FanController()
 
-    print("Enabling manual fan control...")
     fan_controller.enable_manual_fan_control()
 
     while True:
-        temperatures = get_gpu_temperatures()
-        if temperatures:
-            print(f"Current GPU temperatures: {temperatures}°C")
-
-            if any(temp > TEMP_THRESHOLD_HIGH for temp in temperatures):
-                print("One or more GPUs are hot. Setting fan speed to 100%.")
-                fan_controller.set_fan_speed(FAN_SPEED_HIGH)
-            elif all(temp < TEMP_THRESHOLD_LOW for temp in temperatures):
-                print("All GPUs are cool. Setting fan speed to 20%.")
-                fan_controller.set_fan_speed(FAN_SPEED_LOW)
-            else:
-                print(
-                    "GPU temperatures are within acceptable range. "
-                    "No change to fan speed."
-                )
+        try:
+            temperatures = get_gpu_temperatures()
+            if temperatures:
+                if any(temp > TEMP_THRESHOLD_HIGH for temp in temperatures):
+                    fan_controller.set_fan_speed(FAN_SPEED_HIGH)
+                elif all(temp < TEMP_THRESHOLD_LOW for temp in temperatures):
+                    fan_controller.set_fan_speed(FAN_SPEED_LOW)
+        except Exception as e:
+            print(f"Error in main loop: {e}")
 
         time.sleep(CHECK_INTERVAL)
 

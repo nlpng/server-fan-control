@@ -9,8 +9,7 @@ COPY fan_control.py /app/
 
 # Install necessary tools
 RUN apt-get update && apt-get install -y \
-    ipmitool \
-    nvidia-smi && \
+    ipmitool && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install necessary Python libraries

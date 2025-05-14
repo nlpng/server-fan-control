@@ -42,7 +42,7 @@ Alternatively, you can use Docker to run the application:
    ```
 
 ## ⚙️ Configuration
-Update the following placeholders in the `fan_control.py` file or set them as environment variables in `docker-compose.yml`:
+Update the following placeholders in the `fan_control.py` file:
 - `SERVER_IP`: The IP address of the server.
 - `IDRAC_USERNAME`: The username for IPMI access.
 - `IDRAC_PASSWORD`: The password for IPMI access.
@@ -57,9 +57,9 @@ Update the following placeholders in the `fan_control.py` file or set them as en
 
 ### 🌡️ Fan Speed Thresholds
 - `TEMP_THRESHOLD_HIGH`: The GPU temperature (in °C) above which the fan speed is set to 100%.
-- `TEMP_THRESHOLD_LOW`: The GPU temperature (in °C) below which the fan speed is set to 20%.
-- `FAN_SPEED_LOW`: The fan speed percentage (in hexadecimal) when the GPU temperature is below `TEMP_THRESHOLD_LOW` (default: 20%).
-- `FAN_SPEED_HIGH`: The fan speed percentage (in hexadecimal) when the GPU temperature exceeds `TEMP_THRESHOLD_HIGH` (default: 100%).
+- `TEMP_THRESHOLD_LOW`: The GPU temperature (in °C) below which the fan speed is set to 21%.
+- `FAN_SPEED_LOW`: The fan speed percentage (in hexadecimal) when the GPU temperature is below `TEMP_THRESHOLD_LOW` (default: 21%).
+- `FAN_SPEED_HIGH`: The fan speed percentage (in hexadecimal) when the GPU temperature exceeds `TEMP_THRESHOLD_HIGH` (default: 50%).
 
 ### 🖥️ GPU Monitoring
 - The script uses NVIDIA's NVML library to monitor GPU temperatures.

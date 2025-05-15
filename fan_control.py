@@ -18,7 +18,7 @@ CHECK_INTERVAL = 10  # seconds
 
 # Fan speed thresholds
 TEMP_THRESHOLD_HIGH = 70  # Increase fan speed above this temperature
-TEMP_THRESHOLD_LOW = 40  # Decrease fan speed below this temperature
+TEMP_THRESHOLD_LOW = 45  # Decrease fan speed below this temperature
 FAN_SPEED_LOW = 0x15  # 21%
 FAN_SPEED_HIGH = 0x32  # 50%
 

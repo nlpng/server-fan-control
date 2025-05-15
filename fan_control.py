@@ -1,5 +1,7 @@
 import subprocess
 import time
+import signal
+import sys
 from pynvml import (
     nvmlInit,
     nvmlDeviceGetHandleByIndex,
@@ -27,6 +29,16 @@ nvmlInit()
 
 # Ensure NVML is properly shut down when the program exits
 atexit.register(nvmlShutdown)
+
+
+def signal_handler(sig, frame):
+    print("Shutting down gracefully...")
+    nvmlShutdown()
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 
 def get_gpu_temperatures():

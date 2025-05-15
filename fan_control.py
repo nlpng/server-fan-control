@@ -110,7 +110,6 @@ class FanController:
             print("ipmitool command not found. Make sure ipmitool is installed.")
 
 
-# Update the main loop to monitor all GPUs
 def main():
     fan_controller = FanController()
 
@@ -120,6 +119,7 @@ def main():
         try:
             temperatures = get_gpu_temperatures()
             if temperatures:
+                # Use the maximum temperature across all GPUs for fan control
                 max_temp = max(temperatures)
                 if max_temp > TEMP_THRESHOLD_HIGH + fan_controller.hysteresis_offset:
                     fan_controller.set_fan_speed(FAN_SPEED_HIGH)

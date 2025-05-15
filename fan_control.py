@@ -47,6 +47,7 @@ def get_gpu_temperatures():
 class FanController:
     def __init__(self):
         self.current_fan_speed = None
+        self.hysteresis_offset = 5  # Hysteresis offset in degrees Celsius
 
     def set_fan_speed(self, speed):
         """Set the fan speed using ipmitool."""
@@ -119,9 +120,10 @@ def main():
         try:
             temperatures = get_gpu_temperatures()
             if temperatures:
-                if any(temp > TEMP_THRESHOLD_HIGH for temp in temperatures):
+                max_temp = max(temperatures)
+                if max_temp > TEMP_THRESHOLD_HIGH + fan_controller.hysteresis_offset:
                     fan_controller.set_fan_speed(FAN_SPEED_HIGH)
-                elif all(temp < TEMP_THRESHOLD_LOW for temp in temperatures):
+                elif max_temp < TEMP_THRESHOLD_LOW - fan_controller.hysteresis_offset:
                     fan_controller.set_fan_speed(FAN_SPEED_LOW)
         except Exception as e:
             print(f"Error in main loop: {e}")
